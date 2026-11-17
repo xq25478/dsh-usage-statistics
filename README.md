@@ -13,7 +13,7 @@ build step, no dependencies, no network calls.
 
 ## What the page shows
 
-- **Range toolbar** — today, the last 7 days, the last 30 days, or any two dates of your own.
+- **Range toolbar** — today (the default), the last 7 days, the last 30 days, or any two dates of your own.
 - **Three headline figures** — the range total (split into new input, cache traffic, and output), the
   request count with the average per request, and the cache hit rate.
 - **A vertical histogram** — one column per day, or per hour when the range is a single day, with

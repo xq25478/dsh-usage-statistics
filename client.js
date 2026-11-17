@@ -400,7 +400,8 @@ window.__ModuleLoader__.load({
       const { t, subscribeLocale } = props
       // `preset` picks a shorthand window; `custom` holds the two day keys a
       // custom range was applied with. Either way the Host resolves the range.
-      const [preset, setPreset] = React.useState('last7')
+      // The page opens on today: that is the question it exists to answer.
+      const [preset, setPreset] = React.useState('today')
       const [custom, setCustom] = React.useState({ from: '', to: '' })
       // `manual` drives the spinner: a background poll must not flash the button.
       const [reload, setReload] = React.useState({ count: 0, manual: false })

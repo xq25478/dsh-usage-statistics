@@ -257,6 +257,22 @@ const report = {
 const loading = render(['last7', { from: '', to: '' }, { count: 0, manual: false }])
 assert.ok(textOf(loading).includes('t:loading'), 'the loading state names what it is doing')
 
+// 1b. The page opens on today, not on a week.
+const firstPaint = render([])
+const pressed = []
+const collectPressed = (node) => {
+  if (node === null || node === undefined || typeof node !== 'object') return
+  if (Array.isArray(node)) {
+    for (const child of node) collectPressed(child)
+    return
+  }
+  if (node.props?.['aria-pressed'] === true) pressed.push(node)
+  for (const child of node.children ?? []) collectPressed(child)
+}
+collectPressed(firstPaint)
+assert.equal(pressed.length, 1, 'exactly one range is in force')
+assert.equal(textOf(pressed[0]).join(''), 't:rangeToday', 'the page opens on today')
+
 // 2. Ready: every figure, the table, the sources block, and the bottom bar.
 const ready = render(['last7', { from: '', to: '' }, { count: 0, manual: false }, { status: 'ready', data: report, busy: false }])
 const readyText = textOf(ready)
