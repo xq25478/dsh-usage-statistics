@@ -20,10 +20,10 @@
  */
 
 /** Shared route constant; the browser resolves it against its document base. */
-export const TOKEN_REPORT_PATH = '/api/token-usage-daily/report'
+export const TOKEN_REPORT_PATH = '/api/usage-statistics/report'
 
 /** The one push route: an open NDJSON stream of snapshots. */
-export const TOKEN_STREAM_PATH = '/api/token-usage-daily/stream'
+export const TOKEN_STREAM_PATH = '/api/usage-statistics/stream'
 
 /** Widest accepted history window, in days. */
 export const MAX_WINDOW_DAYS = 365

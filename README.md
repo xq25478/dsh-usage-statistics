@@ -43,7 +43,7 @@ Harness `0.2.2-rc.3` or newer; it reads `~/.dsh/sessions` and nothing else.
 ## How it updates
 
 There is no polling. On open, the page holds one NDJSON stream to the Host
-(`/api/token-usage-daily/stream`); the Host pushes a fresh snapshot whenever a reply settles,
+(`/api/usage-statistics/stream`); the Host pushes a fresh snapshot whenever a reply settles,
 coalescing bursts into one push per 400 ms and sending a heartbeat every 20 s. A quiet stream is
 reopened after 1.5 s, a stream that has delivered nothing for 45 s is treated as dead, and returning
 to the tab asks for a fresh snapshot. The log header shows the time of the last push, so a stalled

@@ -1,5 +1,5 @@
 {
-  "name": "@local/token-usage-daily",
+  "name": "dsh-usage-statistics",
   "version": "1.0.0",
   "private": true,
   "description": "Usage statistics (用量统计): a DeepSeek Harness plugin adding per-day and per-hour token usage, cache hit rate, and a live request log.",

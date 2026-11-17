@@ -6,16 +6,16 @@
  * Host route the other half registers, so nothing here replays a session log.
  */
 window.__ModuleLoader__.load({
-  id: '@local/token-usage-daily',
+  id: 'dsh-usage-statistics',
   factory(require) {
     const React = require('react')
     const h = React.createElement
 
     /** Locale namespace owned by this plugin. */
-    const NS = 'token-usage-daily'
+    const NS = 'usage-statistics'
 
     /** The push route: one NDJSON connection the Host writes snapshots into. */
-    const STREAM_ROUTE = 'api/token-usage-daily/stream'
+    const STREAM_ROUTE = 'api/usage-statistics/stream'
 
     /** Panel id: the rail entry address, which is also the `main` dispatch key. */
     const PANEL_ID = 'token-usage'
@@ -1068,7 +1068,7 @@ window.__ModuleLoader__.load({
       inject: ['slots', 'locale'],
       apply(ctx) {
         const t = ctx.locale.bind(NS)
-        ctx.effect(() => ctx.locale.register(NS, { en: EN, zh: ZH }), 'token-usage-daily: dictionaries')
+        ctx.effect(() => ctx.locale.register(NS, { en: EN, zh: ZH }), 'usage-statistics: dictionaries')
         ctx.slots.inject('main', () => ctx.slots.register({
           name: 'main',
           key: PANEL_ID,

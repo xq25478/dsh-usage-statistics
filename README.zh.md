@@ -35,7 +35,7 @@ plugin_manager install_bundle  target=~/dsh-plugins/dsh-usage-statistics
 
 ## 更新机制
 
-没有轮询。打开页面时前端只连一条 NDJSON 流（`/api/token-usage-daily/stream`），Host 在每次回复落地时
+没有轮询。打开页面时前端只连一条 NDJSON 流（`/api/usage-statistics/stream`），Host 在每次回复落地时
 推送一份快照：400ms 内的突发合并成一帧，空闲时每 20 秒一个心跳。流断开后 1.5 秒重连，45 秒收不到任何帧
 视为死连接，切回标签页会主动重开。日志标题旁显示「实时 · HH:MM:SS 更新」，通道卡住看得见，不会静默。
 

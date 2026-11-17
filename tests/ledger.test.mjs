@@ -1,4 +1,4 @@
-/** Fold tests for the token-usage-daily ledger, run outside the Host. */
+/** Fold tests for the usage-statistics ledger, run outside the Host. */
 import assert from 'node:assert/strict'
 import { createLedger, clampWindow, dayKeyOf, MAX_WINDOW_DAYS } from '../ledger.js'
 

@@ -47,7 +47,7 @@ globalThis.window = {
 
 await import('../client.js')
 assert.ok(definition !== undefined, 'the module registers itself with the loader')
-assert.equal(definition.id, '@local/token-usage-daily', 'the module id equals the package name')
+assert.equal(definition.id, 'dsh-usage-statistics', 'the module id equals the package name')
 
 const bundle = definition.factory((name) => {
   requires.push(name)
@@ -93,9 +93,9 @@ assert.equal(rail.options.id, page.options.key, 'the rail id is the main panel d
 assert.equal(rail.options.order, 20, 'the entry sorts after Plugins (0) and Automation tasks (10)')
 assert.equal(typeof rail.component, 'function', 'the rail entry renders an icon component')
 assert.equal(typeof page.component, 'function', 'the main panel renders a page component')
-assert.equal(rail.options.label(), 'token-usage-daily:panel', 'the rail label comes from the bound namespace')
+assert.equal(rail.options.label(), 'usage-statistics:panel', 'the rail label comes from the bound namespace')
 
-const dicts = dictionaries.get('token-usage-daily')
+const dicts = dictionaries.get('usage-statistics')
 assert.ok(dicts !== undefined, 'the plugin owns one locale namespace')
 assert.deepEqual(Object.keys(dicts).sort(), ['en', 'zh'])
 assert.deepEqual(Object.keys(dicts.en).sort(), Object.keys(dicts.zh).sort(), 'both dictionaries carry the same keys')

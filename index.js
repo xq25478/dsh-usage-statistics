@@ -14,7 +14,7 @@
  */
 import { TOKEN_REPORT_PATH, TOKEN_STREAM_PATH, clampWindow, createLedger } from './ledger.js'
 
-export const name = 'token-usage-daily'
+export const name = 'usage-statistics'
 
 /** Both halves are needed: the session corpus to read, the connection to serve. */
 export const inject = ['connection', 'sessionQuery']
@@ -68,14 +68,14 @@ export function apply(ctx) {
     flushTimer = setTimeout(flush, FLUSH_MS)
   }
 
-  ctx.effect(() => ledger.subscribe(schedule), 'token-usage-daily: change feed')
+  ctx.effect(() => ledger.subscribe(schedule), 'usage-statistics: change feed')
   ctx.effect(() => () => {
     if (flushTimer !== null) {
       clearTimeout(flushTimer)
       flushTimer = null
     }
     for (const stream of [...streams]) stream.close()
-  }, 'token-usage-daily: open streams')
+  }, 'usage-statistics: open streams')
 
   // One committed event at a time: the ledger folds it into the day it belongs
   // to, so the page stays current without re-reading a session log.
@@ -107,7 +107,7 @@ export function apply(ctx) {
         return new Response(JSON.stringify(report), { headers })
       },
     }),
-    'token-usage-daily: report route',
+    'usage-statistics: report route',
   )
 
   ctx.effect(
@@ -180,6 +180,6 @@ export function apply(ctx) {
         })
       },
     }),
-    'token-usage-daily: stream route',
+    'usage-statistics: stream route',
   )
 }
