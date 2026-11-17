@@ -423,6 +423,21 @@ for (const [name, text] of [['Chinese', inChinese], ['English', inEnglish]]) {
   assert.ok(!text.includes('927M'), `${name} copy has no M unit`)
 }
 
+// 2g. The histogram tooltip reads in the same units as everything else.
+const tipSlot = { total: 927000000, input: 2000000, cacheRead: 900000000, cacheWrite: 0, output: 25000000, prompt: 902000000, requests: 155 }
+const tipTree = render(
+  ['last7', { from: '', to: '' }, { count: 0, manual: false }, { status: 'ready', data: bigReport, busy: false },
+    { key: '14:00', label: '14:00', slot: tipSlot, left: 12, top: 40, below: false }, 0],
+)
+const tipNode = find(tipTree, (props) => typeof props.className === 'string' && props.className.split(' ').includes('tud-tip'))
+assert.ok(tipNode !== undefined, 'a hovered column renders the tooltip')
+const tipText = textOf(tipNode).join(' ')
+assert.ok(tipText.includes('9.27亿'), 'the tooltip total reads in 亿')
+assert.ok(tipText.includes('9亿'), 'the tooltip cache figure reads in 亿')
+assert.ok(tipText.includes('200万'), 'the tooltip input reads in 万')
+assert.ok(!tipText.includes('927,000,000'), 'the tooltip carries no exact integer')
+assert.ok(tipText.includes('155'), 'a small count stays exact')
+
 // 3. No copy may leak an internal value into the page.
 for (const state of [loading, ready]) {
   const text = textOf(state).join(' ')

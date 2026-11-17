@@ -372,7 +372,6 @@ window.__ModuleLoader__.load({
       const height = max === 0 ? 0 : (total / max) * 100
       const share = (value) => (total === 0 ? 0 : (value / total) * 100)
       const rate = percent(hitRate(slot.cacheRead, slot.prompt))
-      const title = `${label} · ${exact(total)} · ${t('tableHit')} ${rate}`
       // Rendered top-down, so output sits above cache above new input.
       const segments = [
         ['tud-bar-output', share(slot.output)],
@@ -382,7 +381,6 @@ window.__ModuleLoader__.load({
       return h('div', {
         className: isToday ? 'tud-col tud-is-today' : 'tud-col',
         role: 'img',
-        title,
         'aria-label': `${label}: ${exact(total)} · ${t('tableHit')} ${rate}`,
         onMouseEnter: onHover,
         onMouseLeave: onLeave,
@@ -690,12 +688,12 @@ window.__ModuleLoader__.load({
                         },
                       },
                         h('div', { className: 'tud-tip-title' }, tip.label),
-                        h('div', null, `${t('tableTotal')} ${exact(tip.slot.total)}`),
-                        h('div', null, `${t('tableInput')} ${exact(tip.slot.input)}`),
-                        h('div', null, `${t('tableCacheRead')} ${exact(tip.slot.cacheRead + tip.slot.cacheWrite)}`),
-                        h('div', null, `${t('tableOutput')} ${exact(tip.slot.output)}`),
+                        h('div', null, `${t('tableTotal')} ${compact(tip.slot.total)}`),
+                        h('div', null, `${t('tableInput')} ${compact(tip.slot.input)}`),
+                        h('div', null, `${t('tableCacheRead')} ${compact(tip.slot.cacheRead + tip.slot.cacheWrite)}`),
+                        h('div', null, `${t('tableOutput')} ${compact(tip.slot.output)}`),
                         h('div', null, `${t('tableHit')} ${percent(hitRate(tip.slot.cacheRead, tip.slot.prompt))}`),
-                        h('div', null, `${t('statusRequests')} ${exact(tip.slot.requests ?? 0)}`),
+                        h('div', null, `${t('statusRequests')} ${compact(tip.slot.requests ?? 0)}`),
                       ),
                   ),
               ),
