@@ -74,6 +74,7 @@ window.__ModuleLoader__.load({
       loading: 'Reading session logs…',
       empty: 'No token usage recorded in this window yet.',
       error: 'Could not read the usage report: {message}',
+      needReload: 'The plugin was updated. Reload the page (Cmd+R / Ctrl+R) and try again.',
       scanFailed: 'Could not read the local session logs, so there is nothing to report yet.',
       retry: 'Try again',
       refreshFailed: 'Refresh failed ({message}); showing the last report.',
@@ -151,6 +152,7 @@ window.__ModuleLoader__.load({
       loading: '正在读取会话日志…',
       empty: '这个时间范围内还没有记录到用量。',
       error: '读取用量报告失败：{message}',
+      needReload: '插件已更新，请刷新页面（Cmd+R / Ctrl+R）后重试。',
       scanFailed: '读不到本机会话日志，暂时没有可统计的数据。',
       retry: '重试',
       refreshFailed: '刷新失败（{message}），显示上一次的结果。',
@@ -435,9 +437,10 @@ window.__ModuleLoader__.load({
             (error) => {
               if (!live || controller.signal.aborted) return
               const message = error instanceof Error ? error.message : String(error)
+              const shown = message.includes('404') ? t('needReload') : message
               setState((previous) => previous.status === 'ready'
-                ? { status: 'ready', data: previous.data, busy: false, stale: message }
-                : { status: 'error', message, busy: false })
+                ? { status: 'ready', data: previous.data, busy: false, stale: shown }
+                : { status: 'error', message: shown, busy: false })
               reconnect = setTimeout(connect, RECONNECT_MS)
             },
           )
