@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Usage statistics",
+    "description": "Adds a Usage statistics page to the left rail: pick today, the last 7 or 30 days, or any two dates, and read per-day or per-hour token usage as a stacked histogram (cache hits green, misses grey, output orange), with the cache hit rate and a live request log that updates the moment a reply settles. Today's figures stay pinned along the bottom. Open it from the bar-chart icon below the session list. Every number comes from the usage block each model reply reports.",
+    "detail": "docs/DETAIL.md"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@local/token-usage-daily",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Usage statistics (用量统计): a DeepSeek Harness plugin adding per-day and per-hour token usage, cache hit rate, and a live request log.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./ledger": "./ledger.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "ledger.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-layout"
+      ]
+    }
+  },
+  "license": "MIT",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "token-usage",
+    "usage-statistics",
+    "observability"
+  ],
+  "author": "xq25478",
+  "homepage": "https://github.com/xq25478/dsh-usage-statistics#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xq25478/dsh-usage-statistics.git"
+  }
+}
