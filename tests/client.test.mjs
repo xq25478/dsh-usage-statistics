@@ -131,10 +131,10 @@ function translate(key, params) {
   return params === undefined ? `t:${key}` : `t:${key}${JSON.stringify(params)}`
 }
 
-function render(states) {
+function render(states, extra = {}) {
   hooks.queue = states ?? []
   hooks.cursor = 0
-  const props = { t: translate, subscribeLocale: () => () => {} }
+  const props = { t: translate, subscribeLocale: () => () => {}, ...extra }
   // The registered component is the error boundary around the page; the page
   // itself is the one element it wraps, and that is what runs here.
   const wrapper = page.component(props)
@@ -262,7 +262,7 @@ const ready = render(['last7', { from: '', to: '' }, { count: 0, manual: false }
 const readyText = textOf(ready)
 const number = (value) => Number(value).toLocaleString()
 
-assert.ok(readyText.includes(number(today.total)), 'today\'s total reaches the page')
+assert.ok(readyText.includes('10.1万'), 'the range total reads in 万')
 assert.ok(
   find(ready, (props) => typeof props['aria-label'] === 'string'
     && props['aria-label'].startsWith(`${today.date}: ${number(today.total)}`)) !== undefined,
@@ -285,7 +285,7 @@ assert.ok(statusBar !== undefined, 'the bottom bar is rendered')
 const statusItems = (statusBar.children ?? []).flatMap((child) => (child?.children ?? []).filter((item) => item?.props?.className === 'tud-status-item'))
 assert.equal(statusItems.length, 6, 'the bottom bar restates the six figures')
 const statusBarText = textOf(statusBar).join(' ')
-for (const value of [number(today.total), number(today.input), number(today.cacheRead), number(today.output), '99%']) {
+for (const value of ['10.1万', '1000', '9.9万', '500', '99%']) {
   assert.ok(statusBarText.includes(value), `the bottom bar shows ${value}`)
 }
 assert.ok(statusBarText.includes('t:statusWindow'), 'the bottom bar carries the window summary')
@@ -411,6 +411,18 @@ assert.ok(marked[0].children.every((cell) => cell.children?.[0]?.props?.classNam
 const settled = render(['last7', { from: '', to: '' }, { count: 0, manual: false }, { status: 'ready', data: report, busy: false, freshAfter: Number.POSITIVE_INFINITY }])
 assert.equal(rowsIn(settled).filter((row) => typeof row.props?.className === 'string' && row.props.className.includes('tud-row-new')).length, 0, 'a first paint marks nothing')
 
+// 2f. Every display counts in 万/亿, whatever the language.
+const bigDay = day('2026-11-17', 2000000, 900000000, 25000000)
+const bigReport = { ...report, days: [bigDay], todayRow: bigDay, windowDays: 1 }
+const readyStates = ['last7', { from: '', to: '' }, { count: 0, manual: false }, { status: 'ready', data: bigReport, busy: false }]
+const inChinese = textOf(render(readyStates, { activeLocale: () => 'zh' })).join(' ')
+const inEnglish = textOf(render(readyStates, { activeLocale: () => 'en' })).join(' ')
+for (const [name, text] of [['Chinese', inChinese], ['English', inEnglish]]) {
+  assert.ok(text.includes('9.27亿'), `${name} copy counts in 亿`)
+  assert.ok(text.includes('200万'), `${name} copy counts in 万`)
+  assert.ok(!text.includes('927M'), `${name} copy has no M unit`)
+}
+
 // 3. No copy may leak an internal value into the page.
 for (const state of [loading, ready]) {
   const text = textOf(state).join(' ')
@@ -427,6 +439,6 @@ assert.equal(find(failed, (props) => props.className === 'tud-cards'), undefined
 // 5. A failed refresh keeps the report on screen and says so.
 const stale = render(['last7', { from: '', to: '' }, { count: 0, manual: false }, { status: 'ready', data: report, busy: false, stale: 'HTTP 502' }])
 assert.ok(textOf(stale).includes('t:refreshFailed{"message":"HTTP 502"}'), 'a stale report is labelled')
-assert.ok(textOf(stale).includes(number(today.total)), 'a stale report keeps its figures')
+assert.ok(textOf(stale).includes('10.1万'), 'a stale report keeps its figures')
 
 console.log('client tests passed')

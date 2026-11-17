@@ -188,11 +188,23 @@ window.__ModuleLoader__.load({
       footnote: '数字来自每次模型回复上报的用量；没有上报用量的回复不计入。合计＝新输入＋缓存读取＋缓存写入＋输出，复用了缓存的提示按每次回复各计一次。缓存命中率＝缓存读取 ÷ 提示侧 token（新输入＋缓存读取＋缓存写入），没有上报用量的日子不显示命中率。从其他会话分叉出来的会话不重复计入继承的历史。',
     }
 
-    /** Compact count for cards and bars: 1234 becomes "1.2K". */
+    /** Round a scaled count and drop a trailing zero: 9.270 -> "9.27", 1.0 -> "1". */
+    function scaled(value, factor, digits) {
+      const rounded = Math.round((value / factor) * 10 ** digits) / 10 ** digits
+      return String(rounded)
+    }
+
+    /**
+     * Compact a token count for every display: 万 above ten thousand, 亿 above a
+     * hundred million, and the exact integer below that.
+     *
+     * One system, not one per language: 927,000,000 always reads as "9.27亿".
+     * Hover text and the tooltip keep the exact number.
+     */
     function compact(value) {
       const abs = Math.abs(value)
-      if (abs >= 1000000) return `${(value / 1000000).toFixed(abs >= 10000000 ? 0 : 1)}M`
-      if (abs >= 1000) return `${(value / 1000).toFixed(abs >= 10000 ? 0 : 1)}K`
+      if (abs >= 1e8) return `${scaled(value, 1e8, 2)}亿`
+      if (abs >= 1e4) return `${scaled(value, 1e4, 1)}万`
       return String(value)
     }
 
@@ -573,18 +585,18 @@ window.__ModuleLoader__.load({
       const statusItems = data === undefined || scanFailed
         ? []
         : [
-          [t('statusTotal'), exact(todayRow.total)],
-          [t('statusInput'), exact(todayRow.input)],
-          [t('statusCache'), exact(todayRow.cacheRead + todayRow.cacheWrite)],
-          [t('statusOutput'), exact(todayRow.output)],
-          [t('statusHit'), percent(hitRate(todayRow.cacheRead, todayRow.prompt))],
-          [t('statusRequests'), exact(todayRow.requests)],
+          [t('statusTotal'), compact(todayRow.total), exact(todayRow.total)],
+          [t('statusInput'), compact(todayRow.input), exact(todayRow.input)],
+          [t('statusCache'), compact(todayRow.cacheRead + todayRow.cacheWrite), exact(todayRow.cacheRead + todayRow.cacheWrite)],
+          [t('statusOutput'), compact(todayRow.output), exact(todayRow.output)],
+          [t('statusHit'), percent(hitRate(todayRow.cacheRead, todayRow.prompt)), ''],
+          [t('statusRequests'), compact(todayRow.requests), exact(todayRow.requests)],
         ]
       const statusWindow = data === undefined || scanFailed
         ? ''
         : t('statusWindow', {
           days: data.windowDays,
-          total: exact(windowTotal),
+          total: compact(windowTotal),
           hit: percent(hitRate(windowCacheRead, windowPrompt)),
         })
       const windowRequests = sum(days, 'requests')
@@ -629,7 +641,7 @@ window.__ModuleLoader__.load({
                   label: t('cardRequests'),
                   total: windowRequests,
                   sub: t('cardAverage', {
-                    value: windowRequests === 0 ? 0 : Math.round(windowTotal / windowRequests),
+                    value: compact(windowRequests === 0 ? 0 : Math.round(windowTotal / windowRequests)),
                   }),
                   t,
                 }),
@@ -692,7 +704,7 @@ window.__ModuleLoader__.load({
                 h('div', { className: 'tud-panel-head' },
                   h('h2', { className: 'tud-panel-title' },
                     t('logTitle'),
-                    h('span', { className: 'tud-badge', title: t('statusRequests') }, exact(windowRequests)),
+                    h('span', { className: 'tud-badge', title: t('statusRequests') }, compact(windowRequests)),
                   ),
                   h('div', { className: 'tud-legend' },
                     h('span', state.stale === undefined ? 'tud-live' : 'tud-live tud-live-stale',
@@ -741,9 +753,9 @@ window.__ModuleLoader__.load({
                       h('td', null, h('div', { className: 'tud-cell' }, row.provider ?? '—')),
                       h('td', { className: 'tud-log-model', title: row.model ?? '' },
                         h('div', { className: 'tud-cell' }, row.model ?? '—')),
-                      h('td', null, h('div', { className: 'tud-cell' }, exact(row.input))),
-                      h('td', null, h('div', { className: 'tud-cell' }, exact(row.cacheRead))),
-                      h('td', null, h('div', { className: 'tud-cell' }, exact(row.output))),
+                      h('td', { title: exact(row.input) }, h('div', { className: 'tud-cell' }, compact(row.input))),
+                      h('td', { title: exact(row.cacheRead) }, h('div', { className: 'tud-cell' }, compact(row.cacheRead))),
+                      h('td', { title: exact(row.output) }, h('div', { className: 'tud-cell' }, compact(row.output))),
                       h('td', null, h('div', { className: 'tud-cell' }, row.tps === null ? '—' : `${Math.round(row.tps)} tok/s`)),
                       h('td', null, h('div', { className: 'tud-cell' }, row.ttftMs === null ? '—' : `${(row.ttftMs / 1000).toFixed(1)}s`)),
                       ))),
@@ -771,11 +783,11 @@ window.__ModuleLoader__.load({
                         className: day.date === data.today ? 'tud-is-today' : undefined,
                       },
                       h('th', { scope: 'row' }, day.date === data.today ? t('dayToday') : day.date),
-                      h('td', null, exact(day.input)),
-                      h('td', null, exact(day.cacheRead)),
-                      h('td', { className: 'tud-col-narrow' }, exact(day.cacheWrite)),
-                      h('td', null, exact(day.output)),
-                      h('td', { className: 'tud-total' }, exact(day.total)),
+                      h('td', { title: exact(day.input) }, compact(day.input)),
+                      h('td', { title: exact(day.cacheRead) }, compact(day.cacheRead)),
+                      h('td', { className: 'tud-col-narrow', title: exact(day.cacheWrite) }, compact(day.cacheWrite)),
+                      h('td', { title: exact(day.output) }, compact(day.output)),
+                      h('td', { className: 'tud-total', title: exact(day.total) }, compact(day.total)),
                       h('td', null, percent(hitRate(day.cacheRead, day.prompt))),
                       h('td', null, exact(day.sessions)),
                       ))),
@@ -869,9 +881,9 @@ window.__ModuleLoader__.load({
             h('span', { className: 'tud-status-tag' }, t('dayToday')),
             statusItems.length === 0
               ? h('span', { className: 'tud-status-muted' }, data === undefined ? t('loading') : '—')
-              : statusItems.map(([label, value]) => h('span', { key: label, className: 'tud-status-item' },
+              : statusItems.map(([label, value, title]) => h('span', { key: label, className: 'tud-status-item' },
                 h('span', { className: 'tud-status-label' }, label),
-                h('b', null, value),
+                h('b', { title: title === '' ? undefined : title }, value),
               )),
           ),
           h('div', { className: 'tud-status-side' },

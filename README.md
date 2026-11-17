@@ -20,7 +20,8 @@ build step, no dependencies, no network calls.
   cache misses grey, cache hits green, and output orange. Hovering a column for one second shows the
   exact numbers behind it.
 - **A live request log** — the newest requests in the range with time, directory, provider, model, new
-  input, cache read, output, speed (tokens/second), and first-token latency. A row that arrives while
+  input, cache read, output, speed (tokens/second), and first-token latency. Token counts print in
+  万/亿 (`930,435,062` reads as `9.3亿`) and keep the exact number on hover. A row that arrives while
   you watch pops in with a flashing border.
 - **A pinned bottom bar** — today's live figures, whatever range the rest of the page is showing.
 
@@ -39,6 +40,12 @@ plugin_manager install_bundle  target=~/dsh-plugins/dsh-usage-statistics
 
 The plugin appears in the left rail as a bar-chart icon below the session list. It needs DeepSeek
 Harness `0.2.2-rc.3` or newer; it reads `~/.dsh/sessions` and nothing else.
+
+## Units
+
+Every token count prints in 万 (ten thousand) and 亿 (a hundred million), one system in every language:
+`930,435,062` reads as `9.3亿`, `4,562,325` as `456.2万`, and anything under ten thousand stays exact.
+The exact value stays in the hover text, the tooltip, and the accessible name.
 
 ## How it updates
 
